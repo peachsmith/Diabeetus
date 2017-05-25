@@ -6,9 +6,9 @@ class gameEvents{
         void gameInit();
         void gameInput();
         void gameDraw();
-        void drawBackground(int x,int y,SDL_Surface *source,SDL_Surface *destination);
+        void drawBackground(int x,int y,SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination);
         void drawInsulin(int x,int y,SDL_Surface *source,SDL_Surface *destination);
-        void drawSprite(int srcX,int srcY,int dstX,int dstY,int width,int height,SDL_Surface *source,SDL_Surface *destination);
+		void drawSprite(int x, int y, int w, int h, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination);
         void drawRect(double x,double y,double w,double h,Uint32 colour);
         void gameUpdate();
         void gameClean();

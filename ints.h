@@ -1,5 +1,4 @@
 #include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
 #include <cstdlib>
 #include <ctime>
 
@@ -26,7 +25,7 @@ double timeWidth(150);
 
 //Item Logic
 bool collected = false;
-bool bottles[5] = {false};
+//bool bottles[5] = {false};
 int quantity(0);
 
 //Direction Logic
@@ -41,10 +40,7 @@ bool keys[323] = {false};
 
 //Surfaces
 SDL_Surface *screen, *background, *kyle, *insulin, *text, *startButton, *exitButton, *titleScreen, *winScreen;
-SDL_Surface *three, *two, *one, *GO, *timeTitle, *timeBar, *bottlesLeft, *loseScreen;
+SDL_Surface *countDownSurface, *timeTitle, *timeBar, *bottlesLeft, *loseScreen;
 
 //Rectangles
-SDL_Rect kyleRect, insulinRect, textRect, startRect, exitRect;
-
-//Fonts
-TTF_Font *font;
+SDL_Rect kyleRect, insulinRect, textRect, startRect, exitRect, bottlesCrop, kyleCrop, countDownCrop;
