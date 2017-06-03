@@ -1,13 +1,17 @@
-#include "gameEvents.h"
+#include "Diabeetus.h"
 
-int main(int argc, char** argv){
-    gameEvents ge;
-    ge.gameInit();
-    while(!ge.gameDone()){
-        ge.gameInput();
-        ge.gameDraw();
-        ge.gameUpdate();
-    }
-    ge.gameClean();
-    return 0;
+int main(int argc, char** argv) {
+
+	Diabeetus d;
+	d.Init();
+
+	while (!d.Done()) {
+		d.Input();
+		d.Render();
+		d.Update();
+	}
+
+	d.Clean();
+
+	return 0;
 }
