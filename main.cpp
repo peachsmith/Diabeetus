@@ -3,15 +3,15 @@
 int main(int argc, char** argv) {
 
 	Diabeetus d;
-	d.Init();
+	d.init();
 
-	while (!d.Done()) {
-		d.Input();
-		d.Render();
-		d.Update();
+	while (!d.isDone()) {
+		d.input();
+		d.render();
+		d.update();
 	}
 
-	d.Clean();
+	d.clean();
 
 	return 0;
 }

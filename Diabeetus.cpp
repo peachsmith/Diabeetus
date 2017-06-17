@@ -5,8 +5,20 @@ Diabeetus::Diabeetus() {
 
 }
 
-void Diabeetus::Init() {
+void Diabeetus::init() {
+
 	done = false;
+
+	dstX = 0;
+	dstY = 0;
+	width = 38;
+	height = 40;
+
+	insX = 100;
+	insY = 100;
+	insWidth = 30;
+	insHeight = 29;
+
 	sWidth = 400;
 	sHeight = 400;
 	sBits = 32;
@@ -23,44 +35,35 @@ void Diabeetus::Init() {
 	collected = false;
 	timeWidth = 150;
 
-	SDL_Init(SDL_INIT_VIDEO);
-	screen = SDL_SetVideoMode(sWidth, sHeight + 40, sBits, SDL_SWSURFACE);
-	titleScreen = SDL_LoadBMP("graphics/title.bmp");
-	startButton = SDL_LoadBMP("graphics/start.bmp");
-	exitButton = SDL_LoadBMP("graphics/exit.bmp");
-	background = SDL_LoadBMP("graphics/background.bmp");
-	kyle = SDL_LoadBMP("graphics/kyle.bmp");
-	insulin = SDL_LoadBMP("graphics/insulin.bmp");
-	SDL_SetColorKey(insulin, SDL_SRCCOLORKEY, SDL_MapRGB(insulin->format, 1, 249, 0));
-	winScreen = SDL_LoadBMP("graphics/win.bmp");
-	loseScreen = SDL_LoadBMP("graphics/lose.bmp");
-	countDownSurface = SDL_LoadBMP("graphics/countdown.bmp");
-	timeTitle = SDL_LoadBMP("graphics/time.bmp");
-	timeBar = SDL_LoadBMP("graphics/timeBar.bmp");
-	bottlesLeft = SDL_LoadBMP("graphics/bottles.bmp");
-	SDL_WM_SetCaption("Diabeetus", NULL);
-
-	dstX = 0;
-	dstY = 0;
-	width = 38;
-	height = 40;
-
-	insX = 100;
-	insY = 100;
-	insWidth = 30;
-	insHeight = 29;
-
 	U = 0;
 	D = 0;
 	L = 0;
 	R = 0;
 
-	startRect = gameSetRect(140, 125, 100, 50);
-	exitRect = gameSetRect(140, 225, 100, 50);
+	SDL_Init(SDL_INIT_VIDEO);
 
-	countDownCrop = gameSetRect(390, 0, 130, 100);
-	bottlesCrop = gameSetRect(0, 120, 168, 30);
-	kyleCrop = gameSetRect(0, 0, 40, 40);
+	screen = SDL_SetVideoMode(sWidth, sHeight + 40, sBits, SDL_SWSURFACE);
+	background = SDL_LoadBMP("graphics/background.bmp");
+	kyle = SDL_LoadBMP("graphics/kyle.bmp");
+	insulin = SDL_LoadBMP("graphics/insulin.bmp");
+	startButton = SDL_LoadBMP("graphics/start.bmp");
+	exitButton = SDL_LoadBMP("graphics/exit.bmp");
+	titleScreen = SDL_LoadBMP("graphics/title.bmp");
+	winScreen = SDL_LoadBMP("graphics/win.bmp");
+	countDownSurface = SDL_LoadBMP("graphics/countdown.bmp");
+	timeTitle = SDL_LoadBMP("graphics/time.bmp");
+	timeBar = SDL_LoadBMP("graphics/timeBar.bmp");
+	bottlesLeft = SDL_LoadBMP("graphics/bottles.bmp");
+	loseScreen = SDL_LoadBMP("graphics/lose.bmp");
+
+	SDL_SetColorKey(insulin, SDL_SRCCOLORKEY, SDL_MapRGB(insulin->format, 1, 249, 0));
+	SDL_WM_SetCaption("Diabeetus", NULL);
+
+	startRect = setRect(140, 125, 100, 50);
+	exitRect = setRect(140, 225, 100, 50);
+	countDownCrop = setRect(390, 0, 130, 100);
+	bottlesCrop = setRect(0, 120, 168, 30);
+	kyleCrop = setRect(0, 0, 40, 40);
 
 	colour = SDL_MapRGB(screen->format, 255, 255, 255);
 
@@ -73,7 +76,7 @@ void Diabeetus::Init() {
 
 }
 
-SDL_Rect Diabeetus::gameSetRect(int x, int y, int w, int h) {
+SDL_Rect Diabeetus::setRect(int x, int y, int w, int h) {
 	SDL_Rect r;
 	r.x = x;
 	r.y = y;
@@ -82,7 +85,7 @@ SDL_Rect Diabeetus::gameSetRect(int x, int y, int w, int h) {
 	return r;
 }
 
-void Diabeetus::Input() {
+void Diabeetus::input() {
 	//All States
 	start = SDL_GetTicks();
 	SDL_Event event;
@@ -97,10 +100,10 @@ void Diabeetus::Input() {
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
 			int x = event.button.x;
 			int y = event.button.y;
-			if (x > startRect.x && x<startRect.x + startRect.w && y>startRect.y && y < startRect.y + startRect.h) {
+			if (x > startRect.x && x < startRect.x + startRect.w && y > startRect.y && y < startRect.y + startRect.h) {
 				state = 1;
 			}
-			else if (x > exitRect.x && x<exitRect.x + exitRect.w && y>exitRect.y && y < exitRect.y + exitRect.h) {
+			else if (x > exitRect.x && x < exitRect.x + exitRect.w && y > exitRect.y && y < exitRect.y + exitRect.h) {
 				done = true;
 			}
 		}
@@ -216,57 +219,59 @@ void Diabeetus::Input() {
 	}
 }
 
-void Diabeetus::Update() {
+void Diabeetus::update() {
 	SDL_Flip(screen);
 	if (1000 / FPS > SDL_GetTicks() - start) {
 		SDL_Delay(1000 / FPS - (SDL_GetTicks() - start));
 	}
 }
 
-void Diabeetus::Clean() {
-	SDL_FreeSurface(titleScreen);
+void Diabeetus::clean() {
+
+	SDL_FreeSurface(screen);
+	SDL_FreeSurface(background);
+	SDL_FreeSurface(kyle);
+	SDL_FreeSurface(insulin);
 	SDL_FreeSurface(startButton);
 	SDL_FreeSurface(exitButton);
-
-	SDL_FreeSurface(kyle);
-	SDL_FreeSurface(bottlesLeft);
+	SDL_FreeSurface(titleScreen);
+	SDL_FreeSurface(winScreen);
 	SDL_FreeSurface(countDownSurface);
 	SDL_FreeSurface(timeTitle);
 	SDL_FreeSurface(timeBar);
+	SDL_FreeSurface(bottlesLeft);
 	SDL_FreeSurface(loseScreen);
-	SDL_FreeSurface(winScreen);
-	SDL_FreeSurface(screen);
 
 	SDL_Quit();
 	exit(0);
 }
 
-bool Diabeetus::Done() {
+bool Diabeetus::isDone() {
 	return done;
 }
 
 bool Diabeetus::collision(SDL_Rect *rect1, SDL_Rect *rect2) {
-	if (rect1->y + 2 >= rect2->y + rect2->h) return false;  //bottom of target
-	if (rect1->x + 20 >= rect2->x + rect2->w) return false; //right of target
-	if (rect1->y + rect1->h <= rect2->y + 5) return false;  //top of target
-	if (rect1->x + rect1->w <= rect2->x + 20) return false; //left of target
+	if (rect1->y + 2 >= rect2->y + rect2->h) return false;  // bottom of target
+	if (rect1->x + 20 >= rect2->x + rect2->w) return false; // right of target
+	if (rect1->y + rect1->h <= rect2->y + 5) return false;  // top of target
+	if (rect1->x + rect1->w <= rect2->x + 20) return false; // left of target
 	return true;
 }
 
-void Diabeetus::Render() {
+void Diabeetus::render() {
 	//Main Menu State (state == 0)
 	if (!state) {
-		drawBackground(0, 0, titleScreen, NULL, screen);
-		drawBackground(140, 125, startButton, NULL, screen);
-		drawBackground(140, 225, exitButton, NULL, screen);
+		drawRect(0, 0, 0, 0, titleScreen, NULL, screen);
+		drawRect(140, 125, 0, 0, startButton, NULL, screen);
+		drawRect(140, 225, 0, 0, exitButton, NULL, screen);
 	}
 	else if (state == 1) {
 
 		//Play State (state == 1)
-		kyleRect = gameSetRect(dstX, dstY, width, height);
-		insulinRect = gameSetRect(insX, insY, insWidth, insHeight);
-		drawBackground(0, 0, background, NULL, screen);
-		drawBackground(190, 400, timeTitle, NULL, screen);
+		kyleRect = setRect(dstX, dstY, width, height);
+		insulinRect = setRect(insX, insY, insWidth, insHeight);
+		drawRect(0, 0, 0, 0, background, NULL, screen);
+		drawRect(190, 400, 0, 0, timeTitle, NULL, screen);
 		if (quantity == 2) {
 			bottlesCrop.y = 90;
 		}
@@ -279,59 +284,41 @@ void Diabeetus::Render() {
 		else if (quantity == 8) {
 			bottlesCrop.y = 0;
 		}
-		drawBackground(10, 405, bottlesLeft, &bottlesCrop, screen);
-		drawRect(238, 412, timeWidth, 15, colour);
+		drawRect(10, 405, 0, 0, bottlesLeft, &bottlesCrop, screen);
+		fillRect(238, 412, timeWidth, 15, colour);
 		if (countDown > 90) {
 			countDownCrop.x = 390;
-			drawBackground(135, 140, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
 		}
 		else if (countDown > 60) {
 			countDownCrop.x = 260;
-			drawBackground(135, 140, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
 		}
 		else if (countDown > 30) {
 			countDownCrop.x = 130;
-			drawBackground(135, 140, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
 		}
 		else if (countDown > 0) {
 			countDownCrop.x = 0;
-			drawBackground(135, 140, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
 		}
 		if (!countDown) {
-			drawInsulin(insX, insY, insulin, screen);
+			drawRect(insX, insY, insWidth, insHeight, insulin, NULL, screen);
 		}
 		SDL_SetColorKey(kyle, SDL_SRCCOLORKEY, SDL_MapRGB(kyle->format, 1, 249, 0));
-		drawSprite(dstX, dstY, width, height, kyle, &kyleCrop, screen);
+		drawRect(dstX, dstY, width, height, kyle, &kyleCrop, screen);
 	}
 	else if (state == 2) {
 		//Win State (state == 2)
-		drawBackground(0, 0, winScreen, NULL, screen);
+		drawRect(0, 0, 0, 0, winScreen, NULL, screen);
 	}
 	else if (state == 3) {
 		//Lose State (state == 3)
-		drawBackground(0, 0, loseScreen, NULL, screen);
+		drawRect(0, 0, 0, 0, loseScreen, NULL, screen);
 	}
 }
 
-void Diabeetus::drawBackground(int x, int y, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination) {
-	SDL_Rect rect;
-	rect.x = x;
-	rect.y = y;
-	SDL_BlitSurface(source, crop, destination, &rect);
-}
-
-void Diabeetus::drawInsulin(int x, int y, SDL_Surface *source, SDL_Surface *destination) {
-	if (!collected && quantity < 10) {
-		SDL_Rect rect;
-		rect.x = x;
-		rect.y = y;
-		rect.w = insWidth;
-		rect.h = insHeight;
-		SDL_BlitSurface(source, NULL, destination, &rect);
-	}
-}
-
-void Diabeetus::drawSprite(int x, int y, int w, int h, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination) {
+void Diabeetus::drawRect(int x, int y, int w, int h, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination) {
 
 	SDL_Rect dst;
 	dst.x = x;
@@ -341,7 +328,7 @@ void Diabeetus::drawSprite(int x, int y, int w, int h, SDL_Surface *source, SDL_
 	SDL_BlitSurface(source, crop, destination, &dst);
 }
 
-void Diabeetus::drawRect(double x, double y, double w, double h, Uint32 colour) {
+void Diabeetus::fillRect(double x, double y, double w, double h, Uint32 colour) {
 	SDL_Rect rect;
 	rect.x = x;
 	rect.y = y;
