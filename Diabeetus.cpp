@@ -1,5 +1,7 @@
 #include "Diabeetus.h"
+#include <iostream>
 #include <ctime>
+#include <limits>
 
 Diabeetus::Diabeetus() {
 
@@ -11,7 +13,7 @@ void Diabeetus::init() {
 
 	dstX = 0;
 	dstY = 0;
-	width = 38;
+	width = 40;
 	height = 40;
 
 	insX = 100;
@@ -20,7 +22,7 @@ void Diabeetus::init() {
 	insHeight = 29;
 
 	sWidth = 400;
-	sHeight = 400;
+	sHeight = 440;
 	sBits = 32;
 
 	for (int i = 0; i < 323; i++)
@@ -40,24 +42,77 @@ void Diabeetus::init() {
 	L = 0;
 	R = 0;
 
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO))
+	{
+		std::cout << "failed to initialize SDL" << std::endl;
+        return;
+	}
 
-	screen = SDL_SetVideoMode(sWidth, sHeight + 40, sBits, SDL_SWSURFACE);
-	background = SDL_LoadBMP("graphics/background.bmp");
-	kyle = SDL_LoadBMP("graphics/kyle.bmp");
-	insulin = SDL_LoadBMP("graphics/insulin.bmp");
-	startButton = SDL_LoadBMP("graphics/start.bmp");
-	exitButton = SDL_LoadBMP("graphics/exit.bmp");
-	titleScreen = SDL_LoadBMP("graphics/title.bmp");
-	winScreen = SDL_LoadBMP("graphics/win.bmp");
-	countDownSurface = SDL_LoadBMP("graphics/countdown.bmp");
-	timeTitle = SDL_LoadBMP("graphics/time.bmp");
-	timeBar = SDL_LoadBMP("graphics/timeBar.bmp");
-	bottlesLeft = SDL_LoadBMP("graphics/bottles.bmp");
-	loseScreen = SDL_LoadBMP("graphics/lose.bmp");
+	win = SDL_CreateWindow(
+        "Diabeetus",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        sWidth,
+        sHeight,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
+    if (win == NULL)
+    {
+		// std::cout << "failed to create window" << std::endl;
+        return;
+    }
 
-	SDL_SetColorKey(insulin, SDL_SRCCOLORKEY, SDL_MapRGB(insulin->format, 1, 249, 0));
-	SDL_WM_SetCaption("Diabeetus", NULL);
+	ren = SDL_CreateRenderer(
+        win,
+        -1,
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (ren == NULL)
+    {
+        SDL_DestroyWindow(win);
+		// std::cout << "failed to create renderer" << std::endl;
+        return;
+    }
+
+	SDL_Surface *backgroundSurface = SDL_LoadBMP("graphics/background.bmp");
+	SDL_Surface *kyleSurface = SDL_LoadBMP("graphics/kyle.bmp");
+	SDL_Surface *insulinSurface = SDL_LoadBMP("graphics/insulin.bmp");
+	SDL_Surface *startButtonSurface = SDL_LoadBMP("graphics/start.bmp");
+	SDL_Surface *exitButtonSurface = SDL_LoadBMP("graphics/exit.bmp");
+	SDL_Surface *titleScreenSurface = SDL_LoadBMP("graphics/title.bmp");
+	SDL_Surface *winScreenSurface = SDL_LoadBMP("graphics/win.bmp");
+	SDL_Surface *countDownSurface = SDL_LoadBMP("graphics/countdown.bmp");
+	SDL_Surface *timeTitleSurface = SDL_LoadBMP("graphics/time.bmp");
+	SDL_Surface *timeBarSurface = SDL_LoadBMP("graphics/timeBar.bmp");
+	SDL_Surface *bottlesLeftSurface = SDL_LoadBMP("graphics/bottles.bmp");
+	SDL_Surface *loseScreenSurface = SDL_LoadBMP("graphics/lose.bmp");
+
+	SDL_SetColorKey(kyleSurface, SDL_TRUE, SDL_MapRGB(kyleSurface->format, 1, 249, 0));
+	SDL_SetColorKey(insulinSurface, SDL_TRUE, SDL_MapRGB(insulinSurface->format, 1, 249, 0));
+
+	background = SDL_CreateTextureFromSurface(ren, backgroundSurface);
+	kyle = SDL_CreateTextureFromSurface(ren, kyleSurface);
+	insulin = SDL_CreateTextureFromSurface(ren, insulinSurface);
+	startButton = SDL_CreateTextureFromSurface(ren, startButtonSurface);
+	exitButton = SDL_CreateTextureFromSurface(ren, exitButtonSurface);
+	titleScreen = SDL_CreateTextureFromSurface(ren, titleScreenSurface);
+	winScreen = SDL_CreateTextureFromSurface(ren, winScreenSurface);
+	countDownTexture = SDL_CreateTextureFromSurface(ren, countDownSurface);
+	timeTitle = SDL_CreateTextureFromSurface(ren, timeTitleSurface);
+	timeBar = SDL_CreateTextureFromSurface(ren, timeBarSurface);
+	bottlesLeft = SDL_CreateTextureFromSurface(ren, bottlesLeftSurface);
+	loseScreen = SDL_CreateTextureFromSurface(ren, loseScreenSurface);
+
+	SDL_FreeSurface(backgroundSurface);
+	SDL_FreeSurface(kyleSurface);
+	SDL_FreeSurface(insulinSurface);
+	SDL_FreeSurface(startButtonSurface);
+	SDL_FreeSurface(exitButtonSurface);
+	SDL_FreeSurface(titleScreenSurface);
+	SDL_FreeSurface(winScreenSurface);
+	SDL_FreeSurface(countDownSurface);
+	SDL_FreeSurface(timeTitleSurface);
+	SDL_FreeSurface(timeBarSurface);
+	SDL_FreeSurface(bottlesLeftSurface);
+	SDL_FreeSurface(loseScreenSurface);
 
 	startRect = setRect(140, 125, 100, 50);
 	exitRect = setRect(140, 225, 100, 50);
@@ -65,9 +120,9 @@ void Diabeetus::init() {
 	bottlesCrop = setRect(0, 120, 168, 30);
 	kyleCrop = setRect(0, 0, 40, 40);
 
-	colour = SDL_MapRGB(screen->format, 255, 255, 255);
+	colour = 0xFFFFFFFF;
 
-	srand(time(0));
+	srand((unsigned int)(time(0) & INT_MAX));
 	insX = rand() % (sWidth - insWidth);
 	insY = rand() % (sHeight - insHeight);
 	if ((insX >= dstX&&insX <= dstX + width) && (insY >= dstY&&insY <= dstY + height)) {
@@ -87,14 +142,14 @@ SDL_Rect Diabeetus::setRect(int x, int y, int w, int h) {
 
 void Diabeetus::input() {
 	//All States
-	start = SDL_GetTicks();
+	start = SDL_GetTicks64();
 	SDL_Event event;
 	if (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) done = true;
-		if (event.type == SDL_KEYDOWN)keys[event.key.keysym.sym] = true;
-		if (event.type == SDL_KEYUP)keys[event.key.keysym.sym] = false;
+		if (event.type == SDL_KEYDOWN)keys[event.key.keysym.scancode] = true;
+		if (event.type == SDL_KEYUP)keys[event.key.keysym.scancode] = false;
 	}
-	if (keys[SDLK_ESCAPE])done = true;
+	if (keys[SDL_SCANCODE_ESCAPE])done = true;
 	if (!state) {
 		//Main Menu State (state == 0)
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -117,16 +172,16 @@ void Diabeetus::input() {
 			timeWidth -= .25;
 			if (!timeWidth) state = 3;
 			if (quantity == 10) state = 2;
-			if (keys[SDLK_DOWN]) {
+			if (keys[SDL_SCANCODE_DOWN]) {
 				if (D < 5) {
-					if (!keys[SDLK_LEFT] && !keys[SDLK_RIGHT]) {
+					if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT]) {
 						kyleCrop.x = 0;
 						kyleCrop.y = 0;
 					}
 					D++;
 				}
 				else if (D < 10) {
-					if (!keys[SDLK_LEFT] && !keys[SDLK_RIGHT]) {
+					if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT]) {
 						kyleCrop.x = 40;
 						kyleCrop.y = 0;
 					}
@@ -135,7 +190,7 @@ void Diabeetus::input() {
 				else D = 0;
 				dstY += 2;
 			}
-			if (keys[SDLK_RIGHT]) {
+			if (keys[SDL_SCANCODE_RIGHT]) {
 				if (R < 5) {
 					kyleCrop.x = 80;
 					kyleCrop.y = 40;
@@ -149,16 +204,16 @@ void Diabeetus::input() {
 				else R = 0;
 				dstX += 2;
 			}
-			if (keys[SDLK_UP]) {
+			if (keys[SDL_SCANCODE_UP]) {
 				if (U < 5) {
-					if (!keys[SDLK_LEFT] && !keys[SDLK_RIGHT]) {
+					if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT]) {
 						kyleCrop.x = 80;
 						kyleCrop.y = 0;
 					}
 					U++;
 				}
 				else if (U < 10) {
-					if (!keys[SDLK_LEFT] && !keys[SDLK_RIGHT]) {
+					if (!keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT]) {
 						kyleCrop.x = 120;
 						kyleCrop.y = 0;
 					}
@@ -167,7 +222,7 @@ void Diabeetus::input() {
 				else U = 0;
 				dstY -= 2;
 			}
-			if (keys[SDLK_LEFT]) {
+			if (keys[SDL_SCANCODE_LEFT]) {
 				if (L < 5) {
 					kyleCrop.x = 0;
 					kyleCrop.y = 40;
@@ -205,7 +260,7 @@ void Diabeetus::input() {
 		}
 	}
 	else if (state == 2 || state == 3) {
-		if (keys[SDLK_RETURN]) {
+		if (keys[SDL_SCANCODE_RETURN]) {
 			countDown = 120;
 			timeWidth = 150;
 			quantity = 0;
@@ -220,27 +275,28 @@ void Diabeetus::input() {
 }
 
 void Diabeetus::update() {
-	SDL_Flip(screen);
-	if (1000 / FPS > SDL_GetTicks() - start) {
-		SDL_Delay(1000 / FPS - (SDL_GetTicks() - start));
+	if (1000 / FPS > SDL_GetTicks64() - start) {
+		SDL_Delay(Uint32(1000 / FPS - (SDL_GetTicks64() - start)));
 	}
 }
 
 void Diabeetus::clean() {
 
-	SDL_FreeSurface(screen);
-	SDL_FreeSurface(background);
-	SDL_FreeSurface(kyle);
-	SDL_FreeSurface(insulin);
-	SDL_FreeSurface(startButton);
-	SDL_FreeSurface(exitButton);
-	SDL_FreeSurface(titleScreen);
-	SDL_FreeSurface(winScreen);
-	SDL_FreeSurface(countDownSurface);
-	SDL_FreeSurface(timeTitle);
-	SDL_FreeSurface(timeBar);
-	SDL_FreeSurface(bottlesLeft);
-	SDL_FreeSurface(loseScreen);
+	SDL_DestroyTexture(background);
+	SDL_DestroyTexture(kyle);
+	SDL_DestroyTexture(insulin);
+	SDL_DestroyTexture(startButton);
+	SDL_DestroyTexture(exitButton);
+	SDL_DestroyTexture(titleScreen);
+	SDL_DestroyTexture(winScreen);
+	SDL_DestroyTexture(countDownTexture);
+	SDL_DestroyTexture(timeTitle);
+	SDL_DestroyTexture(timeBar);
+	SDL_DestroyTexture(bottlesLeft);
+	SDL_DestroyTexture(loseScreen);
+
+	SDL_DestroyRenderer(ren);
+	SDL_DestroyWindow(win);
 
 	SDL_Quit();
 	exit(0);
@@ -259,19 +315,23 @@ bool Diabeetus::collision(SDL_Rect *rect1, SDL_Rect *rect2) {
 }
 
 void Diabeetus::render() {
+
+	SDL_SetRenderDrawColor(ren, 20, 20, 20, 255);
+    SDL_RenderClear(ren);
+
 	//Main Menu State (state == 0)
 	if (!state) {
-		drawRect(0, 0, 0, 0, titleScreen, NULL, screen);
-		drawRect(140, 125, 0, 0, startButton, NULL, screen);
-		drawRect(140, 225, 0, 0, exitButton, NULL, screen);
+		drawRect(0, 0, 0, 0, titleScreen, NULL);
+		drawRect(140, 125, 0, 0, startButton, NULL);
+		drawRect(140, 225, 0, 0, exitButton, NULL);
 	}
 	else if (state == 1) {
 
 		//Play State (state == 1)
 		kyleRect = setRect(dstX, dstY, width, height);
 		insulinRect = setRect(insX, insY, insWidth, insHeight);
-		drawRect(0, 0, 0, 0, background, NULL, screen);
-		drawRect(190, 400, 0, 0, timeTitle, NULL, screen);
+		drawRect(0, 0, 0, 0, background, NULL);
+		drawRect(190, 400, 0, 0, timeTitle, NULL);
 		if (quantity == 2) {
 			bottlesCrop.y = 90;
 		}
@@ -284,55 +344,72 @@ void Diabeetus::render() {
 		else if (quantity == 8) {
 			bottlesCrop.y = 0;
 		}
-		drawRect(10, 405, 0, 0, bottlesLeft, &bottlesCrop, screen);
+		drawRect(10, 405, 0, 0, bottlesLeft, &bottlesCrop);
 		fillRect(238, 412, timeWidth, 15, colour);
 		if (countDown > 90) {
 			countDownCrop.x = 390;
-			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownTexture, &countDownCrop);
 		}
 		else if (countDown > 60) {
 			countDownCrop.x = 260;
-			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownTexture, &countDownCrop);
 		}
 		else if (countDown > 30) {
 			countDownCrop.x = 130;
-			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownTexture, &countDownCrop);
 		}
 		else if (countDown > 0) {
 			countDownCrop.x = 0;
-			drawRect(135, 140, 0, 0, countDownSurface, &countDownCrop, screen);
+			drawRect(135, 140, 0, 0, countDownTexture, &countDownCrop);
 		}
 		if (!countDown) {
-			drawRect(insX, insY, insWidth, insHeight, insulin, NULL, screen);
+			drawRect(insX, insY, insWidth, insHeight, insulin, NULL);
 		}
-		SDL_SetColorKey(kyle, SDL_SRCCOLORKEY, SDL_MapRGB(kyle->format, 1, 249, 0));
-		drawRect(dstX, dstY, width, height, kyle, &kyleCrop, screen);
+		drawRect(dstX, dstY, width, height, kyle, &kyleCrop);
 	}
 	else if (state == 2) {
 		//Win State (state == 2)
-		drawRect(0, 0, 0, 0, winScreen, NULL, screen);
+		drawRect(0, 0, 0, 0, winScreen, NULL);
 	}
 	else if (state == 3) {
 		//Lose State (state == 3)
-		drawRect(0, 0, 0, 0, loseScreen, NULL, screen);
+		drawRect(0, 0, 0, 0, loseScreen, NULL);
 	}
+
+	SDL_RenderPresent(ren);
 }
 
-void Diabeetus::drawRect(int x, int y, int w, int h, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination) {
+void Diabeetus::drawRect(int x, int y, int w, int h, SDL_Texture *source, SDL_Rect *crop) {
+
+	int qWidth, qHeight;
+	if (SDL_QueryTexture(source, NULL, NULL, &qWidth, &qHeight))
+	{
+		return;
+	}
 
 	SDL_Rect dst;
 	dst.x = x;
 	dst.y = y;
-	dst.w = w;
-	dst.h = h;
-	SDL_BlitSurface(source, crop, destination, &dst);
+	dst.w = w ? w : crop != NULL ? crop->w : qWidth;
+	dst.h = h ? h : crop != NULL ? crop->h : qHeight;
+
+	SDL_RenderCopy(ren, source, crop, &dst);
 }
 
 void Diabeetus::fillRect(double x, double y, double w, double h, Uint32 colour) {
 	SDL_Rect rect;
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-	SDL_FillRect(screen, &rect, colour);
+	rect.x = (int)x;
+	rect.y = (int)y;
+	rect.w = (int)w;
+	rect.h = (int)h;
+
+	// Here, we expect colour to be in the format AARRGGBB.
+	SDL_SetRenderDrawColor(
+		ren,
+		(colour & (0xFF << 16)) >> 16, // red
+		(colour & (0xFF << 8)) >> 8,   // green
+		(colour & (0xFF)),             // blue
+		(colour & (0xFF << 24)) >> 24  // alpha
+	);
+	SDL_RenderFillRect(ren, &rect);
 }

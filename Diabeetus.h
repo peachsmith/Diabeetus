@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 class Diabeetus {
 public:
@@ -6,7 +6,7 @@ public:
 	void init();
 	void input();
 	void render();
-	void drawRect(int x, int y, int w, int h, SDL_Surface *source, SDL_Rect *crop, SDL_Surface *destination);
+	void drawRect(int x, int y, int w, int h, SDL_Texture *source, SDL_Rect *crop);
 	void fillRect(double x, double y, double w, double h, Uint32 colour);
 	void update();
 	void clean();
@@ -15,6 +15,8 @@ public:
 	SDL_Rect setRect(int x, int y, int w, int h);
 
 private:
+	SDL_Window* win;
+	SDL_Renderer* ren;
 	bool done;
 	int dstX;
 	int dstY;
@@ -38,21 +40,21 @@ private:
 	int L;
 	int R;
 	const int FPS = 30;
-	Uint32 start;
-	bool keys[323];
-	SDL_Surface *screen;
-	SDL_Surface *background;
-	SDL_Surface *kyle;
-	SDL_Surface *insulin;
-	SDL_Surface *startButton;
-	SDL_Surface *exitButton;
-	SDL_Surface *titleScreen;
-	SDL_Surface *winScreen;
-	SDL_Surface *countDownSurface;
-	SDL_Surface *timeTitle;
-	SDL_Surface *timeBar;
-	SDL_Surface *bottlesLeft;
-	SDL_Surface *loseScreen;
+	Uint64 start;
+	bool keys[SDL_NUM_SCANCODES];
+	// SDL_Surface *screen;
+	SDL_Texture *background;
+	SDL_Texture *kyle;
+	SDL_Texture *insulin;
+	SDL_Texture *startButton;
+	SDL_Texture *exitButton;
+	SDL_Texture *titleScreen;
+	SDL_Texture *winScreen;
+	SDL_Texture *countDownTexture;
+	SDL_Texture *timeTitle;
+	SDL_Texture *timeBar;
+	SDL_Texture *bottlesLeft;
+	SDL_Texture *loseScreen;
 	SDL_Rect kyleRect;
 	SDL_Rect insulinRect;
 	SDL_Rect textRect;
