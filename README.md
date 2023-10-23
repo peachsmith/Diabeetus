@@ -1,1 +1,2 @@
-Uses SDL 1.2 and SDL_ttf
+My first game using SDL.
+
