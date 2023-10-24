@@ -39,7 +39,7 @@ private:
 	int D;
 	int L;
 	int R;
-	const int FPS = 30;
+	int FPS;
 	Uint64 start;
 	bool keys[SDL_NUM_SCANCODES];
 	// SDL_Surface *screen;

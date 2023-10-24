@@ -42,6 +42,8 @@ void Diabeetus::init() {
 	L = 0;
 	R = 0;
 
+	FPS = 30;
+
 	if (SDL_Init(SDL_INIT_VIDEO))
 	{
 		std::cout << "failed to initialize SDL" << std::endl;
@@ -70,6 +72,26 @@ void Diabeetus::init() {
         SDL_DestroyWindow(win);
 		// std::cout << "failed to create renderer" << std::endl;
         return;
+    }
+
+	int scale = 1;
+	int ww, wh;
+    int rw, rh;
+    SDL_GetWindowSize(win, &ww, &wh);
+    SDL_GetRendererOutputSize(ren, &rw, &rh);
+    printf("[DEBUG] window: (%d x %d), renderer: (%d, %d)\n", ww, wh, rw, rh);
+    if (rw > ww)
+    {
+        int scale_correction_x = rw / ww;
+        int scale_correction_y = rh / wh;
+        printf("[DEBUG] scale correction factor: (%d, %d)\n",
+               scale_correction_x,
+               scale_correction_y);
+        SDL_RenderSetScale(ren, (float)scale_correction_x * scale, (float)scale_correction_y * scale);
+    }
+    else if (scale > 0)
+    {
+        SDL_RenderSetScale(ren, (float)scale, (float)scale);
     }
 
 	SDL_Surface *backgroundSurface = SDL_LoadBMP("graphics/background.bmp");
