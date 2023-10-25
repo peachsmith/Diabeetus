@@ -6,7 +6,7 @@ public:
 	void init();
 	void input();
 	void render();
-	void drawRect(int x, int y, int w, int h, SDL_Texture *source, SDL_Rect *crop);
+	void drawRect(int x, int y, int w, int h, SDL_Texture *texture, SDL_Rect *crop);
 	void fillRect(double x, double y, double w, double h, Uint32 colour);
 	void update();
 	void clean();
@@ -42,19 +42,18 @@ private:
 	int FPS;
 	Uint64 start;
 	bool keys[SDL_NUM_SCANCODES];
-	// SDL_Surface *screen;
-	SDL_Texture *background;
-	SDL_Texture *kyle;
-	SDL_Texture *insulin;
-	SDL_Texture *startButton;
-	SDL_Texture *exitButton;
-	SDL_Texture *titleScreen;
-	SDL_Texture *winScreen;
+	SDL_Texture *backgroundTexture;
+	SDL_Texture *kyleTexture;
+	SDL_Texture *insulinTexture;
+	SDL_Texture *startButtonTexture;
+	SDL_Texture *exitButtonTexture;
+	SDL_Texture *titleScreenTexture;
+	SDL_Texture *winScreenTexture;
 	SDL_Texture *countDownTexture;
-	SDL_Texture *timeTitle;
-	SDL_Texture *timeBar;
-	SDL_Texture *bottlesLeft;
-	SDL_Texture *loseScreen;
+	SDL_Texture *timeTitleTexture;
+	SDL_Texture *timeBarTexture;
+	SDL_Texture *bottlesLeftTexture;
+	SDL_Texture *loseScreenTexture;
 	SDL_Rect kyleRect;
 	SDL_Rect insulinRect;
 	SDL_Rect textRect;
@@ -63,4 +62,7 @@ private:
 	SDL_Rect bottlesCrop;
 	SDL_Rect kyleCrop;
 	SDL_Rect countDownCrop;
+
+	inline int nextInsX();
+	inline int nextInsY();
 };
