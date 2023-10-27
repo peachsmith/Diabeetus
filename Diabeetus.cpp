@@ -1,7 +1,7 @@
 #include "Diabeetus.h"
 #include <iostream>
 #include <ctime>
-#include <limits>
+#include <climits>
 
 Diabeetus::Diabeetus() {
 
