@@ -2,3 +2,4 @@
 diabeetus.exe
 *.obj
 *.dll
+*.dSYM/
